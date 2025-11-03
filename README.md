@@ -1,69 +1,60 @@
-# Talk to Unity in Plain English
+# Talk to Unity
 
-![Main Branch Workflow Status](https://github.com/Unity-Lab-AI/Talk-to-Unity/actions/workflows/main.yml/badge.svg?branch=main)
-![Pull Request Workflow Status](https://github.com/Unity-Lab-AI/Talk-to-Unity/actions/workflows/pull-request.yml/badge.svg)
+This project is a simple, voice-controlled AI assistant that runs in your web browser.
 
-Talk to Unity is a single web page that acts like a friendly concierge. The landing screen double-checks that your browser has everything it needs (secure connection, microphone, speech tools). Once every light turns green, a voice assistant named **Unity** wakes up so you can talk out loud and hear it answer back.
+## Prerequisites
 
-## What you need
+Before you begin, ensure you have the following:
 
-- A recent version of Chrome, Edge, or Safari. (Firefox still lacks the speech tools we use.)
-- A secure address — either `https://` on the web or `http://localhost` while testing.
-- Speakers or headphones so you can hear Unity talk.
-- A microphone and permission to use it.
+*   **A modern web browser:** Chrome, Edge, or Safari are recommended. Firefox is not fully supported due to limitations in the Web Speech API.
+*   **A secure connection:** The application must be run from a secure context (`https` or `localhost`).
+*   **A microphone:** Required for voice input.
+*   **Python 3:** Used to run a simple web server and install dependencies.
 
-If any of these are missing, the landing page will highlight what to fix and share a short tip.
+## Getting Started
 
-## Fastest way to try it
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/Unity-Lab-AI/Talk-to-Unity.git
+    cd Talk-to-Unity
+    ```
 
-1. Download the project or clone it with Git.
-   ```bash
-   git clone https://github.com/Unity-Lab-AI/Talk-to-Unity.git
-   cd Talk-to-Unity
-   ```
-2. Start a basic web server. Python is an easy option:
-   ```bash
-   python -m http.server 8000
-   ```
-3. Open `http://localhost:8000` in a supported browser and load `index.html`.
-4. Watch the landing page run its checks. When everything shows **Ready**, press the button to enter the AI lab and start talking to Unity.
+2.  **Install dependencies:**
+    This project uses Playwright for testing. Install the necessary dependencies using pip:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-## Understanding the landing page
+3.  **Run the web server:**
+    You can use Python's built-in HTTP server to run the application locally:
+    ```bash
+    python -m http.server 8000
+    ```
 
-- **System lights**: Secure context, speech recognition, speech playback, and microphone access each get a color. Green means you are good to go. Amber means you will see clear instructions to fix the problem.
-- **Status message**: The box at the top always tells you what Unity is waiting on. When all lights are green it invites you into the lab.
-- **Help links**: Quick links back to the Unity AI Lab website and this repository sit near the top so you can jump out for more info.
+4.  **Open the application:**
+    Open your web browser and navigate to `http://localhost:8000`.
 
-## Using the voice assistant
+## How to Use
 
-1. Enter the lab once the landing checks pass.
-2. Click **Unmute microphone** to let Unity listen.
-3. Speak naturally. Unity will transcribe, respond with text, and also read its answer aloud.
-4. Use the on-screen controls to mute, stop, or reset the conversation if you want to start over.
+1.  The landing page will check if your browser meets the requirements.
+2.  If all checks pass, click the "Launch" button to start the AI assistant.
+3.  Click the microphone button to unmute and start speaking.
 
-All of this runs in the browser — no extra servers or databases are required.
+## File Structure
 
-## Customizing the experience
+| File              | Purpose                                                 |
+| ----------------- | ------------------------------------------------------- |
+| `index.html`      | The main HTML file for the application.                 |
+| `indexAI.html`    | The HTML for the AI assistant interface.                |
+| `style.css`       | The main stylesheet for the application.                |
+| `styleAI.css`     | The stylesheet for the AI assistant interface.          |
+| `app.js`          | The main JavaScript file for the application logic.     |
+| `landing.js`      | The JavaScript file for the landing page.               |
+| `vosklet-adapter.js` | An adapter for the Vosklet speech recognition library. |
+| `ai-instruct.txt` | A text file containing the AI's system prompt.          |
+| `requirements.txt`| A list of Python dependencies for the project.          |
 
-- **Prompt and personality**: Edit `ai-instruct.txt` to change Unity’s default instructions.
-- **Landing behavior**: Adjust the readiness checks or UI copy inside `landing.js`.
-- **Voice interface**: Modify `app.js` for how Unity listens, thinks, and speaks.
-- **Styling**: Tweak the look across the landing page and chat area in `style.css` and `styleAI.css`.
+## Feedback and Contributions
 
-## File map
-
-| File | Purpose |
-| --- | --- |
-| `index.html` | Loads the landing page, pulls in the styles, and boots both scripts. |
-| `landing.js` | Handles the pre-flight checks and controls the landing layout. |
-| `style.css` | Shared styling for the landing screen. |
-| `app.js` | Runs the live voice conversation. |
-| `styleAI.css` | Styles for the in-lab chat interface. |
-| `ai-instruct.txt` | Text prompt that shapes how Unity responds. |
-
-## Need more help?
-
-- Unity AI Lab: <https://unityailab.online>
-- GitHub issues: <https://github.com/Unity-Lab-AI/Talk-to-Unity/issues>
-
-Share feedback, swap in your own prompt, or dress up the visuals — just keep it simple and have fun chatting with Unity.
+*   For issues and feedback, please open an issue on the [GitHub repository](https://github.com/Unity-Lab-AI/Talk-to-Unity/issues).
+*   Contributions are welcome! Please feel free to submit a pull request.

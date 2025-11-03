@@ -1,21 +1,5 @@
 function logToScreen(message) {
-    // Enhanced: write to inline #log-display if present, and to the debug overlay if enabled.
-    const logDisplay = document.getElementById('log-display');
-    if (logDisplay) {
-        logDisplay.innerHTML += message + '<br>';
-    }
-    // If the overlay exists (created below), mirror the message there too.
-    const overlay = document.getElementById('debug-overlay');
-    if (overlay) {
-        const line = document.createElement('div');
-        line.textContent = typeof message === 'string' ? message : String(message);
-        overlay.appendChild(line);
-        // Keep the overlay bounded
-        while (overlay.childNodes.length > 200) {
-            overlay.removeChild(overlay.firstChild);
-        }
-        overlay.scrollTop = overlay.scrollHeight;
-    }
+    return;
 }
 
 /* =========================
@@ -25,67 +9,11 @@ function logToScreen(message) {
    - Word wrap + scroll + capped lines
 ========================= */
 (function ensureDebugOverlay() {
-    try {
-        if (document.getElementById('debug-overlay')) return;
-
-        const box = document.createElement('div');
-        box.id = 'debug-overlay';
-        Object.assign(box.style, {
-            position: 'fixed',
-            bottom: '10px',
-            left: '10px',
-            width: '460px',
-            maxHeight: '260px',
-            overflowY: 'auto',
-            overflowX: 'hidden',
-            backgroundColor: 'rgba(0,0,0,0.85)',
-            color: '#9fffb2',
-            fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-            fontSize: '12px',
-            lineHeight: '1.4',
-            padding: '8px',
-            borderRadius: '8px',
-            border: '1px solid #333',
-            zIndex: '2147483647',
-            whiteSpace: 'pre-wrap',
-            wordBreak: 'break-word',
-            display: 'none' // start hidden
-        });
-        document.addEventListener('DOMContentLoaded', () => {
-            // ensure it mounts after body exists
-            if (!document.getElementById('debug-overlay')) {
-                document.body.appendChild(box);
-            }
-        });
-
-        // Toggle on backtick or tilde
-        window.addEventListener('keydown', (e) => {
-            if (e.key === '`' || e.key === '~') {
-                e.preventDefault();
-                const el = document.getElementById('debug-overlay');
-                if (!el) return;
-                el.style.display = el.style.display === 'none' ? 'block' : 'none';
-            }
-        });
-
-        // Soft-hook console.log so overlay mirrors logs (still prints to real console)
-        const originalLog = console.log;
-        console.log = (...args) => {
-            try {
-                const msg = args.map(a => (typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a))).join(' ');
-                logToScreen(msg);
-            } catch (_) {
-                // ignore overlay errors
-            }
-            originalLog.apply(console, args);
-        };
-    } catch (_) {
-        // Overlay setup should never block the app
-    }
+    return;
 })();
 
 // FIXED: make the debug banner reflect the real script path
-logToScreen('app.js loaded');
+
 
 const landingSection = document.getElementById('landing');
 const appRoot = document.getElementById('app-root');
@@ -328,6 +256,7 @@ async function startApplication() {
     logToScreen('startApplication: Execution complete');
 }
 window.startApplication = startApplication;
+
 
 async function setMutedState(muted, { announce = false } = {}) {
     if (!recognition) {
