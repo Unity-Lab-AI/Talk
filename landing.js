@@ -146,11 +146,11 @@
         }
 
         try {
-            // ✅ Fixed: Always points to ./AI/index.html with proper slash
-            return new URL('./AI/index.html', base || window.location.href).toString();
+            // ✅ Fixed: Always points to ./indexAI.html with proper slash
+            return new URL('./indexAI.html', base || window.location.href).toString();
         } catch (error) {
             console.warn('Failed to resolve Talk to Unity application URL. Using a relative fallback.', error);
-            return './AI/index.html';
+            return './indexAI.html';
         }
     }
 
