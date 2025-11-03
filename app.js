@@ -506,7 +506,8 @@ async function loadSystemPrompt() {
 function loadScript(src) {
     return new Promise((resolve, reject) => {
         const script = document.createElement('script');
-        script.src = src;
+        const isAbsolute = /^https?:\/\//i.test(src);
+        script.src = isAbsolute ? src : resolveAssetPath(src);
         script.onload = resolve;
         script.onerror = reject;
         document.head.appendChild(script);
