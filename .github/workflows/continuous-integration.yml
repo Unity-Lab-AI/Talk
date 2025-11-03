@@ -1,0 +1,124 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  pr-tests:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    name: Run Tests
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Ensure test scripts are executable
+        run: |
+          if compgen -G "test/*.sh" > /dev/null; then
+            chmod +x test/*.sh
+          fi
+
+      - name: Execute pull request tests
+        run: |
+          set -euo pipefail
+          if compgen -G "test/*.sh" > /dev/null; then
+            for test_script in test/*.sh; do
+              echo "Running ${test_script}"
+              bash "${test_script}"
+            done
+          else
+            echo "No tests found in ./test"
+          fi
+
+  pr-report:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    name: Report Tests Statuses
+    needs:
+      - pr-tests
+    steps:
+      - name: Summarize pull request test results
+        run: echo "Pull request tests completed successfully."
+
+  main-build:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    name: Build and Upload Artifacts
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build static site
+        run: |
+          set -euo pipefail
+          mkdir -p build
+          cp index.html build/
+          cp style.css build/
+          cp landing.js build/
+
+      - name: Upload static site artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: static-site
+          path: build
+
+  main-report-build:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    name: Report Build Status
+    needs:
+      - main-build
+    steps:
+      - name: Report build outcome
+        run: echo "Static site build completed successfully."
+
+  main-tests:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    name: Run Tests
+    needs:
+      - main-build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Ensure test scripts are executable
+        run: |
+          if compgen -G "tests/*.sh" > /dev/null; then
+            chmod +x tests/*.sh
+          fi
+
+      - name: Execute main branch tests
+        run: |
+          set -euo pipefail
+          if compgen -G "tests/*.sh" > /dev/null; then
+            for test_script in tests/*.sh; do
+              echo "Running ${test_script}"
+              bash "${test_script}"
+            done
+          else
+            echo "No tests found in ./tests"
+          fi
+
+  main-report-tests:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    name: Report Tests Statuses
+    needs:
+      - main-tests
+    steps:
+      - name: Summarize main branch test results
+        run: echo "Main branch tests completed successfully."
+
+  deploy-pages:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    name: Deploy to Pages
+    needs:
+      - main-build
+    steps:
+      - name: Deploy placeholder
+        run: echo "Deploying static site to GitHub Pages (placeholder)."
