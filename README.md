@@ -47,8 +47,8 @@ All of this runs in the browser — no extra servers or databases are required.
 
 - **Prompt and personality**: Edit `ai-instruct.txt` to change Unity’s default instructions.
 - **Landing behavior**: Adjust the readiness checks or UI copy inside `landing.js`.
-- **Voice interface**: Modify `AI/app.js` for how Unity listens, thinks, and speaks.
-- **Styling**: Tweak the look across the landing page and chat area in `style.css` and `AI/style.css`.
+- **Voice interface**: Modify `app.js` for how Unity listens, thinks, and speaks.
+- **Styling**: Tweak the look across the landing page and chat area in `style.css` and `styleAI.css`.
 
 ## File map
 
@@ -57,8 +57,8 @@ All of this runs in the browser — no extra servers or databases are required.
 | `index.html` | Loads the landing page, pulls in the styles, and boots both scripts. |
 | `landing.js` | Handles the pre-flight checks and controls the landing layout. |
 | `style.css` | Shared styling for the landing screen. |
-| `AI/app.js` | Runs the live voice conversation. |
-| `AI/style.css` | Styles for the in-lab chat interface. |
+| `app.js` | Runs the live voice conversation. |
+| `styleAI.css` | Styles for the in-lab chat interface. |
 | `ai-instruct.txt` | Text prompt that shapes how Unity responds. |
 
 ## Need more help?
