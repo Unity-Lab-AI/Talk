@@ -789,15 +789,15 @@ function removeCommandArtifacts(value) {
     }
 
     let result = value
-        .replace(/\ \[\[ [^\\]*\\bcommand\\b[^\\]*\]/gi, ' ')
-        .replace(/\([^)]*\\bcommand\\b[^)]*\)/gi, ' ')
-        .replace(/<[^>]*\\bcommand\\b[^>]*>/gi, ' ')
-        .replace(/\\bcommands?\s*[:=-]\s*[a-z0-9_\\s-]+/gi, ' ')
-        .replace(/\\bactions?\s*[:=-]\s*[a-z0-9_\\s-]+/gi, ' ')
-        .replace(/\\b(?:execute|run)\\s+command\\s*(?:[:=-]\\s*)?[a-z0-9_-]*/gi, ' ')
-        .replace(/\\bcommand\\s*(?:[:=-]\\s*|\\s+)(?:[a-z0-9_-]+(?:\\s+[a-z0-9_-]+)*)?/gi, ' ');
+        .replace(/\ \[\[ [^\\]*\bcommand\b[^\\]*\]/gi, ' ')
+        .replace(/\([^)]*\bcommand\b[^)]*\)/gi, ' ')
+        .replace(/<[^>]*\bcommand\b[^>]*>/gi, ' ')
+        .replace(/\bcommands?\s*[:=-]\s*[a-z0-9_\s-]+/gi, ' ')
+        .replace(/\bactions?\s*[:=-]\s*[a-z0-9_\s-]+/gi, ' ')
+        .replace(/\b(?:execute|run)\s+command\s*(?:[:=-]\s*)?[a-z0-9_-]*/gi, ' ')
+        .replace(/\bcommand\s*(?:[:=-]\s*|\s+)(?:[a-z0-9_-]+(?:\s+[a-z0-9_-]+)*)?/gi, ' ');
 
-    result = result.replace(/^\\s*[-*]?\\s*(?:command|action)[^\\n]*$/gim, ' ');
+    result = result.replace(/^\s*[-*]?\s*(?:command|action)[^\n]*$/gim, ' ');
 
     return result;
 }
