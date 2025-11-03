@@ -777,10 +777,10 @@ function removeMarkdownLinkTargets(value) {
         .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_match, altText, url) => {
             return isLikelyUrlSegment(url) ? altText : _match;
         })
-        .replace(/\ \[\[\S*\]\(([^)]+)\)/g, (_match, linkText, url) => {
+        .replace(/\ \[\[^\]]*\]\(([^)]+)\)/g, (_match, linkText, url) => {
             return isLikelyUrlSegment(url) ? linkText : _match;
         })
-        .replace(/\ \[\[ \S* (?:command|action)[^\\\]]*\]\([^)]*\)\]/gi, ' ');
+        .replace(/\ \[\[ (?:command|action)[^\\]*\]\([^)]*\)\]/gi, ' ');
 }
 
 function removeCommandArtifacts(value) {
@@ -789,7 +789,7 @@ function removeCommandArtifacts(value) {
     }
 
     let result = value
-        .replace(/\ \[\[ \S* \bcommand\b[^\\\]]*\]/gi, ' ')
+        .replace(/\ \[\[ [^\\]*\bcommand\b[^\\]*\]/gi, ' ')
         .replace(/\([^)]*\bcommand\b[^)]*\)/gi, ' ')
         .replace(/<[^>]*\bcommand\b[^>]*>/gi, ' ')
         .replace(/\bcommands?\s*[:=-]\s*[a-z0-9_\s-]+/gi, ' ')
@@ -808,17 +808,17 @@ function sanitizeForSpeech(text) {
     }
 
     const withoutDirectives = text
-        .replace(/\ \[\[\S*command:[^\\\]]*\]/gi, ' ')
+        .replace(/\ \[\[command:[^\\]*\]/gi, ' ')
         .replace(/\{command:[^}]*\}/gi, ' ')
         .replace(/<command[^>]*>[^<]*<\/command>/gi, ' ')
-        .replace(/\b(?:command|action)\s*[:=]\s*([a-z0-9_\-]+)/gi, ' ')
-        .replace(/\bcommands?\s*[:=]\s*([a-z0-9_\-]+)/gi, ' ')
-        .replace(/\b(?:command|action)\s*(?:->|=>|::)\s*([a-z0-9_\-]+)/gi, ' ')
-        .replace(/\bcommand\s*\([^)]*\)/gi, ' ');
+        .replace(/\\b(?:command|action)\\s*[:=]\\s*([a-z0-9_\\-]+)/gi, ' ')
+        .replace(/\\bcommands?\s*[:=]\\s*([a-z0-9_\\-]+)/gi, ' ')
+        .replace(/\\b(?:command|action)\\s*(?:->|=>|::)\\s*([a-z0-9_\\-]+)/gi, ' ')
+        .replace(/\\bcommand\\s*\([^)]*\)/gi, ' ');
 
     const withoutPollinations = withoutDirectives
-        .replace(/https?:\/\/\S*images? \.pollinations\.ai\S*/gi, '')
-        .replace(/\b\S*images? \.pollinations\.ai\S*\b/gi, '');
+        .replace(/https?:\/\/\S*images?\.pollinations\.ai\S*/gi, '')
+        .replace(/\b\S*images?\.pollinations\.ai\S*\b/gi, '');
 
     const withoutMarkdownTargets = removeMarkdownLinkTargets(withoutPollinations);
     const withoutCommands = removeCommandArtifacts(withoutMarkdownTargets);
@@ -880,7 +880,7 @@ function sanitizeForSpeech(text) {
         .replace(/\s{2,}/g, ' ')
         .replace(/\s+([.,!?;:])/g, '$1')
         .replace(/\(\s*\)/g, '')
-        .replace(/\\\[\s*\]/g, '')
+        .replace(/\[\s*\]/g, '')
         .replace(/\{\s*\}/g, '')
         .replace(/\b(?:https?|www)\b/gi, '')
         .replace(/\b[a-z0-9]+\s+dot\s+[a-z0-9]+\b/gi, '')
@@ -909,8 +909,8 @@ function sanitizeImageUrl(rawUrl) {
 
     return rawUrl
         .trim()
-        .replace(/^["'<\\\\\[({]+/g, '')
-        .replace(/["'>)\\]}]+$/g, '')
+        .replace(/^["'<\\\\[({]+/g, '')
+        .replace(/["'>)\]}]+$/g, '')
         .replace(/[,.;!]+$/g, '');
 }
 
@@ -939,19 +939,19 @@ function shouldRequestFallbackImage({ userInput = '', assistantMessage = '', fal
         return true;
     }
 
-    const keywordPattern = new RegExp(`\b(?:${FALLBACK_IMAGE_KEYWORDS.join('|')})\b`, 'i');
+    const keywordPattern = new RegExp(`\\b(?:${FALLBACK_IMAGE_KEYWORDS.join('|')})\\b`, 'i');
     if (keywordPattern.test(combined)) {
         return true;
     }
 
-    const descriptiveCuePattern = /(here\s+(?:is|'s)|displaying|showing)\s+(?:an?\s+)?(?:image|picture|photo|visual)/i;
+    const descriptiveCuePattern = /(here\s+(?:is|'s)|displaying|showing)\\s+(?:an?\s+)?(?:image|picture|photo|visual)/i;
     return descriptiveCuePattern.test(combined);
 }
 
 function cleanFallbackPrompt(text) {
     return text
-        .replace(/^["'​\s]+/g, '')
-        .replace(/["'​\s]+$/g, '')
+        .replace(/^["\'​\s]+/g, '')
+        .replace(/["\'​\s]+$/g, '')
         .replace(/\s{2,}/g, ' ')
         .trim();
 }
@@ -979,14 +979,14 @@ function buildFallbackImagePrompt(userInput = '', assistantMessage = '') {
 
     const cleaned = cleanFallbackPrompt(
         rawCandidate
-            .replace(/\b(?:please|kindly)\b/gi, '')
-            .replace(/\b(?:can|could|would|will|may|might|let's)\b\s+(?:you\s+)?/gi, '')
+            .replace(/\\b(?:please|kindly)\\b/gi, '')
+            .replace(/\\b(?:can|could|would|will|may|might|let's)\\b\\s+(?:you\\s+)?/gi, '')
             .replace(
-                /\b(?:show|display|draw|paint|generate|create|make|produce|render|give|find|display)\b\s+(?:me\s+|us\s+)?/gi,
+                /\\b(?:show|display|draw|paint|generate|create|make|produce|render|give|find|display)\\b\\s+(?:me\\s+|us\\s+)?/gi,
                 ''
             )
             .replace(
-                /\b(?:an?\s+)?(?:image|picture|photo|visual|illustration|render|drawing|art|shot|wallpaper)\b\s*(?:of|showing)?\s*/gi,
+                /\\b(?:an?\s+)?(?:image|picture|photo|visual|illustration|render|drawing|art|shot|wallpaper)\\b\\s*(?:of|showing)?\\s*/gi,
                 ''
             )
     );
@@ -1069,17 +1069,17 @@ function removeImageReferences(text, imageUrl) {
     result = result.replace(rawUrlRegex, '');
 
     result = result
-        .replace(/\bimage\s+url\s*:?/gi, '')
-        .replace(/\bimage\s+link\s*:?/gi, '')
-        .replace(/\bart(?:work)?\s+(?:url|link)\s*:?/gi, '')
+        .replace(/\\bimage\\s+url\\s*:?/gi, '')
+        .replace(/\\bimage\\s+link\\s*:?/gi, '')
+        .replace(/\\bart(?:work)?\\s+(?:url|link)\\s*:?/gi, '')
         .replace(/<\s*>/g, '')
         .replace(/\(\s*\)/g, '')
-        .replace(/\\\[\s*\]/g, '');
+        .replace(/\\\[\\s*\]/g, '');
 
     return result
-        .replace(/\n{3,}/g, '\n\n')
+        .replace(/\\n{3,}/g, '\\n\\n')
         .replace(/[ \t]{2,}/g, ' ')
-        .replace(/\s+([.,!?;:])/g, '$1')
+        .replace(/\\s+([.,!?;:])/g, '$1')
         .trim();
 }
 
@@ -1096,14 +1096,14 @@ function parseAiDirectives(responseText) {
     let workingText = responseText;
 
     const patterns = [
-        /\ \[\[\S*command:[^\\\]]*\]/gi,
-        /\{command:[^}]*\}/gi,
-        /<command[^>]*>[^<]*<\/command>/gi,
-        /\bcommand\s*[:=]\s*([a-z0-9_\-]+)/gi,
-        /\bcommands?\s*[:=]\s*([a-z0-9_\-]+)/gi,
-        /\baction\s*[:=]\s*([a-z0-9_\-]+)/gi,
-        /\b(?:command|action)\s*(?:->|=>|::)\s*([a-z0-9_\-]+)/gi,
-        /\bcommand\s*\([^)]*\)/gi
+        /\ \[\[command:\s*([^\\]+)\]/gi,
+        /\{command:\s*([^}]*)\}/gi,
+        /<command[^>]*>\s*([^<]*)<\/command>/gi,
+        /\\bcommand\\s*[:=]\s*([a-z0-9_\\-]+)/gi,
+        /\\bcommands?\s*[:=]\s*([a-z0-9_\\-]+)/gi,
+        /\\baction\s*[:=]\s*([a-z0-9_\\-]+)/gi,
+        /\\b(?:command|action)\\s*(?:->|=>|::)\\s*([a-z0-9_\\-]+)/gi,
+        /\\bcommand\\s*\(\s*([^)]+?)\s*\)/gi
     ];
 
     for (const pattern of patterns) {
@@ -1118,7 +1118,7 @@ function parseAiDirectives(responseText) {
         });
     }
 
-    const slashCommandRegex = /(?:^|\s)\/ (open_image|save_image|copy_image|mute_microphone|unmute_microphone|stop_speaking|shutup|set_model_flux|set_model_turbo|set_model_kontext|clear_chat_history|theme_light|theme_dark)\b/gi;
+    const slashCommandRegex = /(?:^|\s)\/ (open_image|save_image|copy_image|mute_microphone|unmute_microphone|stop_speaking|shutup|set_model_flux|set_model_turbo|set_model_kontext|clear_chat_history|theme_light|theme_dark)\\b/gi;
     workingText = workingText.replace(slashCommandRegex, (_match, commandValue) => {
         const normalized = normalizeCommandValue(commandValue);
         if (normalized) {
@@ -1127,10 +1127,10 @@ function parseAiDirectives(responseText) {
         return ' ';
     });
 
-    const directiveBlockRegex = /(?:^|\n)\s*(?:commands?|actions?)\s*:?\s*(?:\n|$ )((?:\s*[-*•]?\s*[a-z0-9_\-]+\s*(?:\(\))?\s*(?:\n|$))+)/gi;
+    const directiveBlockRegex = /(?:^|\\n)\\s*(?:commands?|actions?)\\s*:?\\s*(?:\\n|$ )((?:\\s*[-*•]?\\s*[a-z0-9_\\-]+\\s*(?:\\(\\))?\\s*(?:\\n|$))+)/gi;
     workingText = workingText.replace(directiveBlockRegex, (_match, blockContent) => {
         const lines = blockContent
-            .split(/\n+/) // Split by one or more newlines
+            .split(/\\n+/) // Split by one or more newlines
             .map((line) => line.replace(/^[^a-z0-9]+/i, '').trim())
             .filter(Boolean);
 
@@ -1141,10 +1141,10 @@ function parseAiDirectives(responseText) {
             }
         }
 
-        return '\n';
+        return '\\n';
     });
 
-    const cleanedText = workingText.replace(/\n{3,}/g, '\n\n').trim();
+    const cleanedText = workingText.replace(/\\n{3,}/g, '\\n\\n').trim();
     const uniqueCommands = [...new Set(commands)];
 
     return { cleanedText, commands: uniqueCommands };
@@ -1457,7 +1457,7 @@ async function getAIResponse(userInput) {
             ? removeImageReferences(assistantMessage, selectedImageUrl)
             : assistantMessage;
 
-        const finalAssistantMessage = assistantMessageWithoutImage.replace(/\n{3,}/g, '\n\n').trim();
+        const finalAssistantMessage = assistantMessageWithoutImage.replace(/\\n{3,}/g, '\\n\\n').trim();
         const chatAssistantMessage = finalAssistantMessage || '[image]';
 
         chatHistory.push({ role: 'assistant', content: chatAssistantMessage });
