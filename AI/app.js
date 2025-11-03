@@ -84,7 +84,9 @@ function logToScreen(message) {
     }
 })();
 
-logToScreen('AI/app.js loaded');
+// FIXED: make the debug banner reflect the real script path
+logToScreen('app.js loaded');
+
 const landingSection = document.getElementById('landing');
 const appRoot = document.getElementById('app-root');
 const heroStage = document.getElementById('hero-stage');
@@ -524,8 +526,8 @@ async function setupSpeechRecognition() {
     if (isFirefox) {
         try {
             await loadScript('https://cdn.jsdelivr.net/npm/vosklet@0.2.1/dist/vosklet.umd.min.js');
-            // Keep original relative path used by your AI folder structure
-            await loadScript('AI/vosklet-adapter.js');
+            // FIXED: load adapter from the project root
+            await loadScript('vosklet-adapter.js');
             recognition = await createVoskletRecognizer(
                 (event) => { // onresult
                     const transcript = event.results[event.results.length - 1][0].transcript.trim();
@@ -815,26 +817,26 @@ function sanitizeForSpeech(text) {
         .replace(/\\bcommand\\s*\([^)]*\)/gi, ' ');
 
     const withoutPollinations = withoutDirectives
-        .replace(/https?:\\/\\/\\S*images?.pollinations.ai\\S*/gi, '')
-        .replace(/\\b\\S*images?.pollinations.ai\\S*\\b/gi, '');
+        .replace(/https?:\/\/\S*images?\.pollinations\.ai\S*/gi, '')
+        .replace(/\b\S*images?\.pollinations\.ai\S*\b/gi, '');
 
     const withoutMarkdownTargets = removeMarkdownLinkTargets(withoutPollinations);
     const withoutCommands = removeCommandArtifacts(withoutMarkdownTargets);
 
     const withoutGenericUrls = withoutCommands
-        .replace(/https?:\\/\\/\\S+/gi, ' ')
-        .replace(/\\bwww\\.[^\\s)]+/gi, ' ');
+        .replace(/https?:\/\/\S+/gi, ' ')
+        .replace(/\bwww\.[^\s)]+/gi, ' ');
 
     const withoutSpacedUrls = withoutGenericUrls
-        .replace(/h\\s*t\\s*t\\s*p\\s*s?\\s*:\\s*\\/\\/\\s*[\\w\\-./?%#&=]+/gi, ' ')
-        .replace(/\\bhttps?\\b/gi, ' ')
-        .replace(/\\bwww\\b/gi, ' ');
+        .replace(/h\s*t\s*t\s*p\s*s?\s*:\s*\/\/\s*[\w\-./?%#&=]+/gi, ' ')
+        .replace(/\bhttps?\b/gi, ' ')
+        .replace(/\bwww\b/gi, ' ');
 
     const withoutSpelledUrls = withoutSpacedUrls
-        .replace(/h\\s*t\\s*t\\s*p\\s*s?\\s*(?:[:=]|colon)\\s*\\/\\/\\s*[\\w\\-./?%#&=]+/gi, ' ')
-        .replace(/\\b(?:h\\s*t\\s*t\\s*p\\s*s?|h\\s*t\\s*t\\s*p)\\b/gi, ' ')
-        .replace(/\\bcolon\\b/gi, ' ')
-        .replace(/\\bslash\\b/gi, ' ');
+        .replace(/h\s*t\s*t\s*p\s*s?\s*(?:[:=]|colon)\s*\/\/\s*[\w\-./?%#&=]+/gi, ' ')
+        .replace(/\b(?:h\s*t\s*t\s*p\s*s?|h\s*t\s*t\s*p)\b/gi, ' ')
+        .replace(/\bcolon\b/gi, ' ')
+        .replace(/\bslash\b/gi, ' ');
 
     const parts = withoutSpelledUrls.split(/(\s+)/);
     const sanitizedParts = parts.map((part) => {
@@ -842,15 +844,15 @@ function sanitizeForSpeech(text) {
             return '';
         }
 
-        if (/(?:https?|www|:\/\\/|\\.com|\\.net|\\.org|\\.io|\\.ai|\\.co|\\.gov|\\.edu)/i.test(part)) {
+        if (/(?:https?|www|:\/\/|\.com|\.net|\.org|\.io|\.ai|\.co|\.gov|\.edu)/i.test(part)) {
             return '';
         }
 
-        if (/\\bcommand\\b/i.test(part)) {
+        if (/\bcommand\b/i.test(part)) {
             return '';
         }
 
-        if (/(?:image|artwork|photo)\\s+(?:url|link)/i.test(part)) {
+        if (/(?:image|artwork|photo)\s+(?:url|link)/i.test(part)) {
             return '';
         }
 
@@ -875,18 +877,18 @@ function sanitizeForSpeech(text) {
 
     let sanitized = sanitizedParts
         .join('')
-        .replace(/\\s{2,}/g, ' ')
-        .replace(/\\s+([.,!?;:])/g, '$1')
+        .replace(/\s{2,}/g, ' ')
+        .replace(/\s+([.,!?;:])/g, '$1')
         .replace(/\(\s*\)/g, '')
-        .replace(/\\\[\\s*\]/g, '')
+        .replace(/\[\s*\]/g, '')
         .replace(/\{\s*\}/g, '')
-        .replace(/\\b(?:https?|www)\\b/gi, '')
-        .replace(/\\b[a-z0-9]+\\s+dot\\s+[a-z0-9]+\\b/gi, '')
-        .replace(/\\b(?:dot\\s+)(?:com|net|org|io|ai|co|gov|edu|xyz)\\b/gi, '')
+        .replace(/\b(?:https?|www)\b/gi, '')
+        .replace(/\b[a-z0-9]+\s+dot\s+[a-z0-9]+\b/gi, '')
+        .replace(/\b(?:dot\s+)(?:com|net|org|io|ai|co|gov|edu|xyz)\b/gi, '')
 
         .replace(/<\s*>/g, '')
-        .replace(/\\bcommand\\b/gi, '')
-        .replace(/\\b(?:image|artwork|photo)\\s+(?:url|link)\\b.*$/gim, '')
+        .replace(/\bcommand\b/gi, '')
+        .replace(/\b(?:image|artwork|photo)\s+(?:url|link)\b.*$/gim, '')
         .trim();
 
     return sanitized;
