@@ -512,6 +512,13 @@ function loadScript(src) {
 }
 
 async function setupSpeechRecognition() {
+    const hasPermission = await ensureMicPermission();
+    if (!hasPermission) {
+        console.warn('Microphone permission not granted, speech recognition will not be set up.');
+        setCircleState(userCircle, { error: true, label: 'Microphone permission denied' });
+        return;
+    }
+
     const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
 
     if (isFirefox) {
