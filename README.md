@@ -1,7 +1,7 @@
 # Talk to Unity in Plain English
 
-[![Main Pipeline Status](https://github.com/Unity-Lab-AI/Talk/actions/workflows/continuous-integration.yml/badge.svg?branch=main)](https://github.com/Unity-Lab-AI/Talk/actions/workflows/continuous-integration.yml)
-[![Pull Request Checks](https://github.com/Unity-Lab-AI/Talk/actions/workflows/continuous-integration.yml/badge.svg?event=pull_request)](https://github.com/Unity-Lab-AI/Talk/actions/workflows/continuous-integration.yml)
+![Main Branch Workflow Status](https://github.com/Unity-Lab-AI/Talk-to-Unity/actions/workflows/main.yml/badge.svg?branch=main)
+![Pull Request Workflow Status](https://github.com/Unity-Lab-AI/Talk-to-Unity/actions/workflows/pull-request.yml/badge.svg)
 
 Talk to Unity is a single web page that acts like a friendly concierge. The landing screen double-checks that your browser has everything it needs (secure connection, microphone, speech tools). Once every light turns green, a voice assistant named **Unity** wakes up so you can talk out loud and hear it answer back.
 
