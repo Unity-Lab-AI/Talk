@@ -503,13 +503,69 @@ async function loadSystemPrompt() {
     }
 }
 
-function loadScript(src) {
+function resolveScriptSource(value) {
+    if (typeof value !== 'string' || value === '') {
+        return value;
+    }
+
+    const hasProtocol = /^[a-zA-Z][a-zA-Z\d+.-]*:/.test(value);
+    const isProtocolRelative = value.startsWith('//');
+
+    if (hasProtocol || isProtocolRelative) {
+        return value;
+    }
+
+    return resolveAssetPath(value);
+}
+
+function loadScript(src, { attributes = {} } = {}) {
     return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = src;
-        script.onload = resolve;
-        script.onerror = reject;
-        document.head.appendChild(script);
+        try {
+            const resolvedSrc = resolveScriptSource(src);
+            if (!resolvedSrc) {
+                reject(new Error('Invalid script source.'));
+                return;
+            }
+
+            const existing = document.querySelector(`script[data-dynamic-src="${resolvedSrc}"]`);
+            if (existing) {
+                if (existing.hasAttribute('data-loaded')) {
+                    resolve();
+                    return;
+                }
+
+                existing.addEventListener('load', () => resolve(), { once: true });
+                existing.addEventListener(
+                    'error',
+                    () => reject(new Error(`Failed to load script: ${resolvedSrc}`)),
+                    { once: true }
+                );
+                return;
+            }
+
+            const script = document.createElement('script');
+            script.src = resolvedSrc;
+            script.dataset.dynamicSrc = resolvedSrc;
+
+            Object.entries(attributes).forEach(([key, value]) => {
+                if (value !== undefined && value !== null) {
+                    script.setAttribute(key, value);
+                }
+            });
+
+            script.onload = () => {
+                script.setAttribute('data-loaded', 'true');
+                resolve();
+            };
+            script.onerror = () => {
+                script.remove();
+                reject(new Error(`Failed to load script: ${resolvedSrc}`));
+            };
+
+            document.head.appendChild(script);
+        } catch (error) {
+            reject(error);
+        }
     });
 }
 
@@ -525,8 +581,10 @@ async function setupSpeechRecognition() {
 
     if (isFirefox) {
         try {
-            await loadScript('https://cdn.jsdelivr.net/npm/vosklet@0.2.1/dist/vosklet.umd.min.js');
-            // FIXED: load adapter from the project root
+            await loadScript('https://cdn.jsdelivr.net/npm/vosklet@0.2.1/dist/vosklet.umd.min.js', {
+                attributes: { crossorigin: 'anonymous' }
+            });
+            // FIXED: load adapter relative to the bundled script location
             await loadScript('vosklet-adapter.js');
             recognition = await createVoskletRecognizer(
                 (event) => { // onresult
